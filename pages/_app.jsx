@@ -24,7 +24,7 @@ export default function App({ Component, pageProps }) {
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Taha Abdelrahman Portfolio" />
         <meta name="twitter:description" content="Check out my portfolio projects and back-end skills." />
-        <meta name="twitter:image" content="https://taha-abdelrahman.vercel.app/og-cover.jpg" />
+        <meta name="twitter:image" content="https://tahax.vercel.app/og-cover.jpg" />
 
         {/* Favicon */}
         <link rel="icon" href="/favicon.ico" />
