@@ -90,7 +90,20 @@ export default function Home() {
                   <a
                     key={id}
                     href={`#${id}`}
-                    onClick={() => setMenuOpen(false)}
+                    onClick={(e) => {
+                      e.preventDefault(); // نوقف التنقل المؤقت
+                      setMenuOpen(false); // نقفل المينيو
+
+                      setTimeout(() => {
+                        // نروح للعنصر
+                        window.location.hash = id;
+
+                        // بعد شوية نمسح الـ hash
+                        setTimeout(() => {
+                          history.replaceState(null, "", window.location.pathname + window.location.search);
+                        }, 400); // تأخير بسيط علشان يكون اتحرك بالفعل
+                      }, 200); // تأخير الأول عشان المينيو يتقفل
+                    }}
                     className="text-sm px-3 py-2 border rounded-full text-center hover:bg-gray-600 hover:text-white transition"
                   >
                     {id.charAt(0).toUpperCase() + id.slice(1)}
@@ -160,7 +173,6 @@ export default function Home() {
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
           className="mb-16"
-          scroll-mt-24
         >
           <div className={cardStyles}>
             <h3 className="text-2xl font-bold mb-4">About Me</h3>
