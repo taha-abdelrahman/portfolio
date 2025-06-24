@@ -16,7 +16,6 @@ export default function App({ Component, pageProps }) {
         <meta property="og:title" content="Taha Abdelrahman Portfolio" />
         <meta property="og:description" content="Explore my skills, projects, and contact info. I'm a Back-End Developer specialized in Node.js, MongoDB, and API development." />
         <meta property="og:image" content="https://taha-abdelrahman.vercel.app/og-cover.jpg" />
-        <meta property="og:image" content="https://tahax.vercel.app/og-cover.jpg" />
         <meta property="og:url" content="https://taha-abdelrahman.vercel.app" />
         <meta property="og:url" content="https://tahax.vercel.app" />
         <meta property="og:type" content="website" />
@@ -26,7 +25,6 @@ export default function App({ Component, pageProps }) {
         <meta name="twitter:title" content="Taha Abdelrahman Portfolio" />
         <meta name="twitter:description" content="Check out my portfolio projects and back-end skills." />
         <meta name="twitter:image" content="https://taha-abdelrahman.vercel.app/og-cover.jpg" />
-        <meta name="twitter:image" content="https://tahax.vercel.app/og-cover.jpg" />
 
         {/* Favicon */}
         <link rel="icon" href="/favicon.ico" />
