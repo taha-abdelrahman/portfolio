@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import { Moon, Sun, Download, Mail, Linkedin, Github, Instagram, Phone, Copy, Check, ArrowUp, Menu } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { Moon, Sun, Download, Mail, Linkedin, Github, Instagram, Phone, Copy, Check, ArrowUp, Menu, X } from "lucide-react";
+import { motion, AnimatePresence, useAnimation } from "framer-motion";
 
 export default function Home() {
   const [darkMode, setDarkMode] = useState(true);
@@ -19,6 +19,7 @@ export default function Home() {
 
   const cardStyles = "p-6 rounded-2xl shadow-md hover:scale-105 transition-transform duration-300 bg-white dark:bg-zinc-900 text-black dark:text-white animate-fade-in";
   const contactItem = "flex items-center gap-2 text-sm group";
+
   const copyText = (text) => {
     navigator.clipboard.writeText(text);
     setCopiedItems((prev) => ({ ...prev, [text]: true }));
@@ -51,7 +52,7 @@ export default function Home() {
             </div>
             <div className="md:hidden">
               <button onClick={() => setMenuOpen(!menuOpen)} className="p-2 rounded-full border">
-                <Menu size={20} />
+                {menuOpen ? <X size={20} /> : <Menu size={20} />}
               </button>
             </div>
             <div className="hidden md:flex gap-2 flex-wrap items-center justify-end">
@@ -78,10 +79,12 @@ export default function Home() {
           <AnimatePresence>
             {menuOpen && (
               <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                className="md:hidden mt-4 flex flex-col gap-2"
+                key="menu"
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.3 }}
+                className="md:hidden mt-4 flex flex-col gap-2 overflow-hidden"
               >
                 {["about", "skills", "projects", "contact"].map((id) => (
                   <a
@@ -157,6 +160,7 @@ export default function Home() {
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
           className="mb-16"
+          scroll-mt-24
         >
           <div className={cardStyles}>
             <h3 className="text-2xl font-bold mb-4">About Me</h3>
