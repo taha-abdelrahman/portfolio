@@ -1,284 +1,319 @@
 import { useState, useEffect } from "react";
 import { Moon, Sun, Download, Mail, Linkedin, Github, Instagram, Phone, Copy, Check, ArrowUp, Menu, X } from "lucide-react";
-import { motion, AnimatePresence, useAnimation } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
+import { Typewriter } from 'react-simple-typewriter';
 
 export default function Home() {
-  const [darkMode, setDarkMode] = useState(true);
-  const [copiedItems, setCopiedItems] = useState({});
-  const [showTop, setShowTop] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
+    const [darkMode, setDarkMode] = useState(true);
+    const [copiedItems, setCopiedItems] = useState({});
+    const [showTop, setShowTop] = useState(false);
+    const [menuOpen, setMenuOpen] = useState(false);
 
-  useEffect(() => {
-    document.documentElement.style.scrollBehavior = "smooth";
-    const onScroll = () => {
-      setShowTop(window.scrollY > 300);
+    useEffect(() => {
+        document.documentElement.style.scrollBehavior = "smooth";
+        const onScroll = () => {
+            setShowTop(window.scrollY > 300);
+        };
+        window.addEventListener("scroll", onScroll);
+        return () => window.removeEventListener("scroll", onScroll);
+    }, []);
+
+    const cardStyles = "p-6 rounded-2xl shadow-2xl hover:scale-105 transition-transform duration-300 bg-white dark:bg-zinc-900 text-black dark:text-white animate-fade-in backdrop-blur-md bg-opacity-90";
+    const contactItem = "flex items-center gap-2 text-sm group shadow-md bg-white dark:bg-zinc-800 text-black dark:text-white rounded-md px-4 py-2 transition duration-200";
+    const textWithShadow = "font-bold drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.25)]";
+
+    const copyText = (text) => {
+        navigator.clipboard.writeText(text);
+        setCopiedItems((prev) => ({ ...prev, [text]: true }));
+        setTimeout(() => {
+            setCopiedItems((prev) => ({ ...prev, [text]: false }));
+        }, 2000);
     };
-    window.addEventListener("scroll", onScroll);
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
 
-  const cardStyles = "p-6 rounded-2xl shadow-md hover:scale-105 transition-transform duration-300 bg-white dark:bg-zinc-900 text-black dark:text-white animate-fade-in";
-  const contactItem = "flex items-center gap-2 text-sm group";
+    const getCopyIcon = (text) => copiedItems[text] ? <Check size={14} className="text-green-500" /> : <Copy size={14} />;
 
-  const copyText = (text) => {
-    navigator.clipboard.writeText(text);
-    setCopiedItems((prev) => ({ ...prev, [text]: true }));
-    setTimeout(() => {
-      setCopiedItems((prev) => ({ ...prev, [text]: false }));
-    }, 2000);
-  };
-
-  const getCopyIcon = (text) => copiedItems[text] ? <Check size={14} className="text-green-500" /> : <Copy size={14} />;
-
-
-  return (
-    <div className={
-      darkMode
-        ? "dark min-h-screen text-white bg-gradient-to-b from-black via-zinc-900 to-zinc-800"
-        : "min-h-screen text-black bg-gradient-to-b from-white via-gray-100 to-gray-200"
-    }>
-      <div className="max-w-4xl mx-auto px-4 py-8 relative">
-        {/* Header */}
-        <motion.header
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="mb-12"
+    return (
+        <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.6 }}
+            className={
+                darkMode
+                    ? "dark min-h-screen text-white bg-gradient-to-br from-black via-zinc-900 to-zinc-800 bg-[url('/noise.svg')] bg-fixed"
+                    : "dark min-h-screen text-white bg-gradient-to-br from-zinc-900 via-zinc-700 to-zinc-800 bg-[url('/noise.svg')] bg-fixed"
+            }
         >
-          <div className="flex justify-between items-center">
-            <div className="flex items-center gap-3">
-              <img src="/avatar.png" alt="Taha Abdelrahman" className="w-12 h-12 rounded-full shadow-lg" />
-              <h1 className="text-3xl font-bold">Taha Abdelrahman</h1>
-            </div>
-            <div className="md:hidden">
-              <button onClick={() => setMenuOpen(!menuOpen)} className="p-2 rounded-full border">
-                {menuOpen ? <X size={20} /> : <Menu size={20} />}
-              </button>
-            </div>
-            <div className="hidden md:flex gap-2 flex-wrap items-center justify-end">
-              {["about", "skills", "projects", "contact"].map((id) => (
-                <a
-                  key={id}
-                  href={`#${id}`}
-                  className="text-sm px-3 py-1 border rounded-full hover:bg-gray-600 hover:text-white transition-transform hover:scale-105"
+            <div className="max-w-4xl mx-auto px-4 py-8 relative">
+                <motion.header
+                    initial={{ opacity: 0, y: -20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6 }}
+                    className="mb-12 shadow-xl rounded-xl bg-white dark:bg-zinc-900 text-black dark:text-white p-4"
                 >
-                  {id.charAt(0).toUpperCase() + id.slice(1)}
-                </a>
-              ))}
-              <button
-                className="p-2 rounded-full border hover:scale-110 hover:bg-gray-600 transition-transform duration-200"
-                onClick={() => setDarkMode(!darkMode)}
-                aria-label="Toggle dark mode"
-              >
-                {darkMode ? <Sun /> : <Moon />}
-              </button>
-            </div>
-          </div>
+                    <div className="flex justify-between items-center">
+                        <div className="flex items-center gap-3">
+                            <img src="/avatar.jpg" alt="Taha Abdelrahman" className="w-12 h-12 rounded-full shadow-md" />
+                            <h1 className={`text-3xl ${textWithShadow}`}>Taha Abdelrahman</h1>
+                        </div>
+                        <div className="md:hidden">
+                            <button onClick={() => setMenuOpen(!menuOpen)} className="p-2 rounded-full border shadow-sm bg-white dark:bg-zinc-800 text-black dark:text-white">
+                                {menuOpen ? <X size={20} /> : <Menu size={20} />}
+                            </button>
+                        </div>
+                        <div className="hidden md:flex gap-2 flex-wrap items-center justify-end">
+                            {["about", "skills", "projects", "contact"].map((id) => (
+                                <a
+                                    key={id}
+                                    href={`#${id}`}
+                                    className="text-sm px-3 py-1 border rounded-full hover:bg-gray-600 hover:text-white transition-transform hover:scale-105 shadow-sm text-black dark:text-white"
+                                >
+                                    {id.charAt(0).toUpperCase() + id.slice(1)}
+                                </a>
+                            ))}
+                            <button
+                                className="p-2 rounded-full border shadow-md transition-all duration-200 bg-zinc-200 dark:bg-zinc-800 text-black dark:text-white hover:rotate-180"
+                                onClick={() => setDarkMode(!darkMode)}
+                                aria-label="Toggle dark mode"
+                            >
+                                {darkMode ? <Sun size={18} /> : <Moon size={18} />}
+                            </button>
+                        </div>
+                    </div>
 
-          {/* Mobile Menu */}
-          <AnimatePresence>
-            {menuOpen && (
-              <motion.div
-                key="menu"
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: "auto" }}
-                exit={{ opacity: 0, height: 0 }}
-                transition={{ duration: 0.3 }}
-                className="md:hidden mt-4 flex flex-col gap-2 overflow-hidden"
-              >
-                {["about", "skills", "projects", "contact"].map((id) => (
-                  <a
-                    key={id}
-                    href={`#${id}`}
-                    onClick={(e) => {
-                      e.preventDefault(); // نوقف التنقل المؤقت
-                      setMenuOpen(false); // نقفل المينيو
+                    {/* Mobile Menu */}
+                    <AnimatePresence>
+                        {menuOpen && (
+                            <motion.div
+                                key="menu"
+                                initial={{ opacity: 0, height: 0 }}
+                                animate={{ opacity: 1, height: "auto" }}
+                                exit={{ opacity: 0, height: 0 }}
+                                transition={{ duration: 0.3 }}
+                                className="md:hidden mt-4 flex flex-col gap-2 overflow-hidden"
+                            >
+                                {["about", "skills", "projects", "contact"].map((id) => (
+                                    <a
+                                        key={id}
+                                        href={`#${id}`}
+                                        onClick={(e) => {
+                                            e.preventDefault(); // نوقف التنقل المؤقت
+                                            setMenuOpen(false); // نقفل المينيو
 
-                      setTimeout(() => {
-                        // نروح للعنصر
-                        window.location.hash = id;
+                                            setTimeout(() => {
+                                                // نروح للعنصر
+                                                window.location.hash = id;
 
-                        // بعد شوية نمسح الـ hash
-                        setTimeout(() => {
-                          history.replaceState(null, "", window.location.pathname + window.location.search);
-                        }, 400); // تأخير بسيط علشان يكون اتحرك بالفعل
-                      }, 200); // تأخير الأول عشان المينيو يتقفل
-                    }}
-                    className="text-sm px-3 py-2 border rounded-full text-center hover:bg-gray-600 hover:text-white transition"
+                                                // بعد شوية نمسح الـ hash
+                                                setTimeout(() => {
+                                                    history.replaceState(null, "", window.location.pathname + window.location.search);
+                                                }, 400); // تأخير بسيط علشان يكون اتحرك بالفعل
+                                            }, 200); // تأخير الأول عشان المينيو يتقفل
+                                        }}
+                                        className="text-sm px-3 py-2 border rounded-full text-center hover:bg-gray-600 hover:text-white transition"
+                                    >
+                                        {id.charAt(0).toUpperCase() + id.slice(1)}
+                                    </a>
+                                ))}
+                                <button
+                                    className="p-2 rounded-full border hover:scale-110 hover:bg-gray-600 transition-transform duration-200 self-center"
+                                    onClick={() => setDarkMode(!darkMode)}
+                                    aria-label="Toggle dark mode"
+                                >
+                                    {darkMode ? <Sun /> : <Moon />}
+                                </button>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+
+                </motion.header>
+
+                <AnimatePresence>
+                    {showTop && (
+                        <motion.button
+                            initial={{ opacity: 0, scale: 0.8 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.8 }}
+                            onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+                            className="fixed bottom-6 right-6 z-50 bg-blue-600 text-white p-3 rounded-full shadow-xl hover:bg-blue-700"
+                            style={{ zIndex: 9999 }}
+                        >
+                            <ArrowUp />
+                        </motion.button>
+                    )}
+                </AnimatePresence>
+
+                <motion.section
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6 }}
+                    className="mb-16 shadow-xl rounded-xl p-6 bg-white dark:bg-zinc-900 text-black dark:text-white"
+                >
+                    <h2 className={`text-4xl font-bold mb-4 ${textWithShadow}`}>
+                        Hi, I'm Taha <br />
+                        <span className={`text-blue-500 shadow-md inline-block ${textWithShadow}`}>
+                            <Typewriter words={["Back-End Dev", "API Builder", "Database Designer"]} loop cursor />
+                        </span>
+                    </h2>
+                    <p className={`text-lg mb-2 ${textWithShadow}`}>
+                        Back-End Developer & Visual Designer specialized in Node.js, MongoDB, and RESTful APIs.
+                    </p>
+                    <div className="flex gap-4 mt-4">
+                        <motion.a
+                            whileHover={{ scale: 1.05, y: -2 }}
+                            transition={{ type: "spring", stiffness: 300 }}
+                            href="#projects"
+                            className="px-6 py-2 bg-blue-600 text-white rounded-full hover:bg-blue-700 shadow-md"
+                        >
+                            View My Work
+                        </motion.a>
+                        <motion.a
+                            whileHover={{ scale: 1.05, y: -2 }}
+                            transition={{ type: "spring", stiffness: 300 }}
+                            href="/Taha_Abdelrahman_CV.pdf"
+                            download
+                            className="flex items-center gap-2 px-6 py-2 border border-blue-600 text-blue-600 rounded-full hover:bg-blue-600 hover:text-white shadow-md bg-white dark:bg-zinc-900 text-black dark:text-white"
+                        >
+                            <Download size={16} /> Download CV
+                        </motion.a>
+                    </div>
+                </motion.section>
+
+                {/* About Section */}
+                <motion.section
+                    id="about"
+                    initial={{ opacity: 0, y: 40 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.6 }}
+                    className="mb-16"
+                >
+                    <div className={cardStyles}>
+                        <h3 className={`text-2xl mb-4 ${textWithShadow}`}>About Me</h3>
+                        <p className="leading-relaxed text-base">
+                            My name is <span className="text-blue-500 font-semibold">Taha Abdelrahman</span>, a dedicated and detail-oriented high school senior specializing in back-end web development. I have hands-on experience designing and implementing RESTful APIs, managing NoSQL databases, and building scalable infrastructure using <strong>Node.js</strong>, <strong>Express.js</strong>, and <strong>MongoDB</strong>. Additionally, I am proficient in tools like <strong>Firebase</strong>, <strong>Docker</strong>, and version control systems like <strong>Git</strong>. My skill set also extends to visual content design using <strong>Canva</strong> for creating promotional materials and UI assets.
+                        </p>
+                    </div>
+                </motion.section>
+
+                {/* Skills Section */}
+                <motion.section
+                    id="skills"
+                    initial={{ opacity: 0, y: 40 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.6 }}
+                    className="mb-16"
+                >
+                    <div className={cardStyles}>
+                        <h3 className={`text-2xl mb-4 ${textWithShadow}`}>Technical Skills</h3>
+                        <p className="mb-4">Here are the main technologies and tools I work with:</p>
+                        <div className="flex flex-wrap gap-3">
+                            {["Node.js", "Express.js", "Next.js", "React.js", "TailwindCSS", "MongoDB", "Firebase", "Git", "Docker", "REST APIs", "Canva", "DB Design"].map(skill => (
+                                <motion.span
+                                    key={skill}
+                                    className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-4 py-1 rounded-full text-sm font-medium hover:scale-105 transition-transform duration-200 shadow"
+                                    whileHover={{ scale: 1.1 }}
+                                >
+                                    {skill}
+                                </motion.span>
+                            ))}
+                        </div>
+                    </div>
+                </motion.section>
+
+                {/* Projects Section */}
+                <motion.section
+                    id="projects"
+                    initial={{ opacity: 0, y: 40 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.6 }}
+                    className="mb-16"
+                >
+                    <div className={cardStyles}>
+                        <h3 className={`text-2xl mb-4 ${textWithShadow}`}>Selected Projects</h3>
+                        <div className="grid gap-4">
+                            <div className="bg-zinc-100 dark:bg-zinc-800 p-5 rounded-xl shadow hover:scale-[1.02] transition-all duration-300">
+                                <h4 className="text-xl font-semibold mb-1">🎟 Ticket Booking Platform</h4>
+                                <p className="text-sm mb-2 text-gray-500 dark:text-gray-400">
+                                    A web-based ticket booking platform developed using <strong>Next.js</strong>, <strong>MongoDB</strong>, and <strong>TailwindCSS</strong>. The system supports user authentication, dynamic event listings, and secure API architecture.
+                                </p>
+                                <div className="flex items-center gap-4">
+                                    <a
+                                        href="https://ticketron.vercel.app/"
+                                        className="text-blue-500 hover:underline font-medium"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                    >
+                                        🔗 Live Preview
+                                    </a>
+                                    {/* <a
+                    href="https://github.com/taha-abdelrahman"
+                    className="text-gray-400 hover:text-blue-400 text-sm"
+                    target="_blank"
                   >
-                    {id.charAt(0).toUpperCase() + id.slice(1)}
-                  </a>
-                ))}
-                <button
-                  className="p-2 rounded-full border hover:scale-110 hover:bg-gray-600 transition-transform duration-200 self-center"
-                  onClick={() => setDarkMode(!darkMode)}
-                  aria-label="Toggle dark mode"
+                    View Code →
+                  </a> */}
+                                </div>
+                            </div>
+                            {/* Additional projects can be listed here */}
+                            <div className="bg-zinc-100 dark:bg-zinc-800 p-5 rounded-xl shadow hover:scale-[1.02] transition-all duration-300 opacity-60 pointer-events-none">
+                                <h4 className="text-xl font-semibold mb-1">🛠 Orken Team Platform (In Progress)</h4>
+                                <p className="text-sm mb-2 text-gray-500 dark:text-gray-400">
+                                    A collaborative workspace management system currently under active development. The platform will allow teams to manage projects, roles, and workflows seamlessly using modern technologies including <strong>Next.js</strong>, <strong>TailwindCSS</strong>, and <strong>MongoDB</strong>.
+                                </p>
+                                <p className="text-xs italic text-gray-400 dark:text-gray-500">Status: In Development — Not yet deployed</p>
+                            </div>
+
+                        </div>
+                    </div>
+                </motion.section>
+
+                {/* Contact Section */}
+                <motion.section
+                    id="contact"
+                    initial={{ opacity: 0, y: 40 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.6 }}
+                    className="mb-16"
                 >
-                  {darkMode ? <Sun /> : <Moon />}
-                </button>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </motion.header>
+                    <div className={cardStyles}>
+                        <h3 className={`text-2xl mb-4 ${textWithShadow}`}>Contact Information</h3>
+                        <p className="mb-4">Feel free to reach out for project opportunities, freelance inquiries, or networking:</p>
+                        <ul className="mt-4 space-y-3">
+                            <li className={contactItem}>
+                                <Mail size={16} /> taha.abdelra7man@gmail.com
+                                <button onClick={() => copyText("taha.abdelra7man@gmail.com")} className="ml-auto opacity-60 group-hover:opacity-100">
+                                    {getCopyIcon("taha.abdelra7man@gmail.com")}
+                                </button>
+                            </li>
+                            <li className={contactItem}>
+                                <Phone size={16} /> +20 101 000 4881
+                                <button onClick={() => copyText("+20 101 000 4881")} className="ml-auto opacity-60 group-hover:opacity-100">
+                                    {getCopyIcon("+20 101 000 4881")}
+                                </button>
+                            </li>
+                            <li className={contactItem}>
+                                <Linkedin size={16} /><a href="https://www.linkedin.com/in/taha-abdelra7man/" target="_blank" className="text-blue-500 hover:underline">LinkedIn</a>
+                            </li>
+                            <li className={contactItem}>
+                                <Github size={16} /><a href="https://github.com/taha-abdelrahman" target="_blank" className="text-blue-500 hover:underline">GitHub</a>
+                            </li>
+                            <li className={contactItem}>
+                                <Instagram size={16} /><a href="https://www.instagram.com/x.tvhv/" target="_blank" className="text-blue-500 hover:underline">@x.tvhv</a>
+                            </li>
+                        </ul>
+                    </div>
+                </motion.section>
 
-        {/* Scroll to Top */}
-        <AnimatePresence>
-          {showTop && (
-            <motion.button
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.8 }}
-              onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-              className="fixed bottom-6 right-6 z-50 bg-blue-600 text-white p-3 rounded-full shadow-lg hover:bg-blue-700"
-              style={{ zIndex: 9999 }}
-            >
-              <ArrowUp />
-            </motion.button>
-          )}
-        </AnimatePresence>
+                {/* Footer */}
+                <footer className="text-center py-6 text-sm text-gray-400 dark:text-gray-500">
+                    © {new Date().getFullYear()} Taha Abdelrahman — Back-End Developer & Designer
+                </footer>
 
-        {/* Hero Section */}
-        <motion.section
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="mb-16"
-        >
-          <h2 className="text-4xl font-bold mb-4">Hi, I'm Taha</h2>
-          <p className="text-lg mb-2">
-            Back-End Developer & Visual Designer specialized in Node.js, MongoDB, and RESTful APIs.
-          </p>
-          <div className="flex gap-4 mt-4">
-            <a
-              href="#projects"
-              className="px-6 py-2 bg-blue-600 text-white rounded-full hover:bg-blue-700 hover:scale-105 transition-transform duration-200"
-            >
-              View My Work
-            </a>
-            <a
-              href="/Taha_Abdelrahman_CV.pdf"
-              download
-              className="flex items-center gap-2 px-6 py-2 border border-blue-600 text-blue-600 rounded-full hover:bg-blue-600 hover:text-white hover:scale-105 transition-transform duration-200"
-            >
-              <Download size={16} /> Download CV
-            </a>
-          </div>
-        </motion.section>
 
-        {/* About Section */}
-        <motion.section
-          id="about"
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="mb-16"
-        >
-          <div className={cardStyles}>
-            <h3 className="text-2xl font-bold mb-4">About Me</h3>
-            <p>
-              I'm a high school student and a freelance Back-End Developer with experience in building and optimizing
-              scalable systems using Node.js, Express.js, MongoDB, and Firebase. I'm also skilled in Git, Docker,
-              and visual content creation using Canva.
-            </p>
-          </div>
-        </motion.section>
-
-        {/* Skills Section */}
-        <motion.section
-          id="skills"
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="mb-16"
-        >
-          <div className={cardStyles}>
-            <h3 className="text-2xl font-bold mb-4">Skills</h3>
-            <div className="flex flex-wrap gap-3">
-              {["Node.js", "Express.js", "MongoDB", "Firebase", "Git", "Docker", "REST APIs", "Canva", "DB Design"].map(skill => (
-                <motion.span
-                  key={skill}
-                  className="bg-blue-700 text-white px-3 py-1 rounded-full text-sm hover:scale-105 transition-transform duration-200"
-                  whileHover={{ scale: 1.1 }}
-                >
-                  {skill}
-                </motion.span>
-              ))}
             </div>
-          </div>
-        </motion.section>
-
-        {/* Projects Section */}
-        <motion.section
-          id="projects"
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="mb-16"
-        >
-          <div className={cardStyles}>
-            <h3 className="text-2xl font-bold mb-4">Projects</h3>
-            <div className="bg-zinc-100 dark:bg-zinc-800 p-4 rounded-lg hover:scale-105 transition-transform duration-200">
-              <h4 className="text-xl font-semibold mb-2">Ticket Booking Website</h4>
-              <p className="mb-2">A modern ticket booking system built using Next.js, MongoDB, and TailwindCSS. Includes authentication and dynamic ticket listings.</p>
-              <a
-                href="https://ticketron.vercel.app/"
-                className="text-blue-500 hover:underline"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Visit Website ↗
-              </a>
-            </div>
-          </div>
-        </motion.section>
-
-        {/* Contact Section */}
-        <motion.section
-          id="contact"
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="mb-16"
-        >
-          <div className={cardStyles}>
-            <h3 className="text-2xl font-bold mb-4">Contact</h3>
-            <p>You can reach me via:</p>
-            <ul className="mt-4 space-y-2">
-              <li className={contactItem}>
-                <Mail size={16} /> taha.abdelra7man@gmail.com
-                <button onClick={() => copyText("taha.abdelra7man@gmail.com")}
-                  className="ml-auto opacity-60 group-hover:opacity-100">
-                  {getCopyIcon("taha.abdelra7man@gmail.com")}
-                </button>
-              </li>
-              <li className={contactItem}>
-                <Phone size={16} /> +20 101 000 4881
-                <button onClick={() => copyText("+20 101 000 4881")} className="ml-auto opacity-60 group-hover:opacity-100">
-                  {getCopyIcon("+20 101 000 4881")}
-                </button>
-              </li>
-              <li className={contactItem}>
-                <Linkedin size={16} /><a href="https://www.linkedin.com/in/taha-abdelra7man/" className="text-blue-500 hover:underline" target="_blank">linkedin.com/in/taha-abdelra7man</a>
-              </li>
-              <li className={contactItem}>
-                <Github size={16} /><a href="https://github.com/taha-abdelrahman" className="text-blue-500 hover:underline" target="_blank">github.com/taha-abdelrahman</a>
-              </li>
-              <li className={contactItem}>
-                <Instagram size={16} /><a href="https://www.instagram.com/x.tvhv/" className="text-blue-500 hover:underline" target="_blank">@x.tvhv</a>
-              </li>
-            </ul>
-          </div>
-        </motion.section>
-
-        {/* Footer */}
-        <footer className="text-center py-6 text-sm text-gray-400 dark:text-gray-500">
-          © {new Date().getFullYear()} Taha Abdelrahman. All rights reserved.
-        </footer>
-      </div>
-    </div>
-  );
+        </motion.div>
+    );
 }
