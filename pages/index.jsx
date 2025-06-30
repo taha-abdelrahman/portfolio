@@ -12,7 +12,7 @@ export default function Home() {
     const [formData, setFormData] = useState({ name: '', email: '', message: '' });
     const [showConfirmModal, setShowConfirmModal] = useState(false);
     const [toastMessage, setToastMessage] = useState(null);
-    const formRef = useRef(null);
+    const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
         document.documentElement.style.scrollBehavior = "smooth";
@@ -54,6 +54,9 @@ export default function Home() {
             return;
         }
 
+        setIsLoading(true);
+        setToastMessage("Sending... ⏳");
+
         try {
             await fetch("/api/contact", {
                 method: "POST",
@@ -70,6 +73,8 @@ export default function Home() {
             setShowContactForm(false);
         } catch {
             setToastMessage("Failed to send message ❌");
+        } finally {
+            setIsLoading(false);
         }
 
         setTimeout(() => setToastMessage(null), 4000);
@@ -430,7 +435,7 @@ export default function Home() {
                                     <button
                                         type="submit"
                                         className="w-full mt-4 px-4 py-2 bg-blue-600 text-white rounded-full hover:bg-blue-700 shadow flex items-center justify-center gap-2 max-w-xs mx-auto"
-                                      style={{ width: "100px" }}
+                                        style={{ width: "100px" }}
 
                                     >
                                         <Send size={16} />
