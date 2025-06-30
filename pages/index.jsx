@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { Moon, Sun, Download, Mail, Linkedin, Github, Instagram, Phone, Copy, Check, ArrowUp, Menu, X } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { Moon, Sun, Download, Mail, Linkedin, Github, Instagram, Phone, Copy, Check, Menu, X, Inbox, Send, ArrowDown, ArrowUp } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Typewriter } from 'react-simple-typewriter';
 
@@ -8,15 +8,30 @@ export default function Home() {
     const [copiedItems, setCopiedItems] = useState({});
     const [showTop, setShowTop] = useState(false);
     const [menuOpen, setMenuOpen] = useState(false);
+    const [showContactForm, setShowContactForm] = useState(false);
+    const [formData, setFormData] = useState({ name: '', email: '', message: '' });
+    const [showConfirmModal, setShowConfirmModal] = useState(false);
+    const [toastMessage, setToastMessage] = useState(null);
+    const formRef = useRef(null);
 
     useEffect(() => {
         document.documentElement.style.scrollBehavior = "smooth";
-        const onScroll = () => {
-            setShowTop(window.scrollY > 300);
-        };
+        const onScroll = () => setShowTop(window.scrollY > 300);
         window.addEventListener("scroll", onScroll);
-        return () => window.removeEventListener("scroll", onScroll);
-    }, []);
+
+        // ✅ إيقاف السكرول عند فتح الفورم
+        if (showContactForm) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = 'auto';
+        }
+
+        return () => {
+            window.removeEventListener("scroll", onScroll);
+            document.body.style.overflow = 'auto';
+        };
+    }, [showContactForm]);
+
 
     const cardStyles = "p-6 rounded-2xl shadow-2xl hover:scale-105 transition-transform duration-300 bg-white dark:bg-zinc-900 text-black dark:text-white animate-fade-in backdrop-blur-md bg-opacity-90";
     const contactItem = "flex items-center gap-2 text-sm group shadow-md bg-white dark:bg-zinc-800 text-black dark:text-white rounded-md px-4 py-2 transition duration-200";
@@ -28,6 +43,36 @@ export default function Home() {
         setTimeout(() => {
             setCopiedItems((prev) => ({ ...prev, [text]: false }));
         }, 2000);
+    };
+
+    const handleSend = async (e) => {
+        e.preventDefault();
+
+        if (!formData.name.trim() || !formData.email.trim() || !formData.message.trim()) {
+            setToastMessage("All fields are required ❗");
+            setTimeout(() => setToastMessage(null), 3000);
+            return;
+        }
+
+        try {
+            await fetch("/api/contact", {
+                method: "POST",
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    name: formData.name,
+                    email: formData.email,
+                    message: formData.message
+                })
+            });
+
+            setToastMessage("Message sent successfully ✅");
+            setFormData({ name: '', email: '', message: '' });
+            setShowContactForm(false);
+        } catch {
+            setToastMessage("Failed to send message ❌");
+        }
+
+        setTimeout(() => setToastMessage(null), 4000);
     };
 
     const getCopyIcon = (text) => copiedItems[text] ? <Check size={14} className="text-green-500" /> : <Copy size={14} />;
@@ -304,8 +349,131 @@ export default function Home() {
                                 <Instagram size={16} /><a href="https://www.instagram.com/x.tvhv/" target="_blank" className="text-blue-500 hover:underline">@x.tvhv</a>
                             </li>
                         </ul>
+                        <div className="text-center mt-10">
+                            <button
+                                onClick={() => setShowContactForm(!showContactForm)}
+                                className="mt-6 px-6 py-2 bg-blue-600 text-white rounded-full hover:bg-blue-700 shadow-md flex items-center justify-center gap-2 mx-auto"
+                            >
+                                {showContactForm ? <Inbox size={16} /> : <Inbox size={16} />}
+                                {showContactForm ? 'Send Message ( Opened )' : 'Send Message'}
+                            </button>
+                        </div>
                     </div>
                 </motion.section>
+
+                {/* Toast Message */}
+                {toastMessage && (
+                    <div className="fixed top-6 left-1/2 -translate-x-1/2 px-6 py-3 bg-zinc-800 text-white rounded-lg shadow-md z-[100] text-sm dark:bg-zinc-700 dark:text-white max-w-[90%] text-center">
+                        {toastMessage}
+                    </div>
+                )}
+
+                {/* Contact Form */}
+                <AnimatePresence>
+                    {showContactForm && (
+                        <motion.section
+                            id="contactForm"
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.9 }}
+                            transition={{ duration: 0.3 }}
+                            className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center overflow-y-auto p-4"
+                        >
+                            <div className="relative bg-white dark:bg-zinc-900 text-black dark:text-white rounded-2xl shadow-2xl max-w-xl w-full p-6">
+                                {/* زر X */}
+                                <button
+                                    onClick={() => setShowContactForm(false)}
+                                    className="absolute top-4 right-4 text-zinc-500 hover:text-red-500"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                </button>
+
+                                <h3 className="text-2xl font-bold mb-6 text-center">Contact Me</h3>
+
+                                <form
+                                    onSubmit={(e) => {
+                                        e.preventDefault();
+                                        setShowConfirmModal(true);
+                                    }}
+                                    className="flex flex-col gap-4 bg-opacity-80 backdrop-blur-lg p-6 rounded-xl shadow-2xl border border-gray-200 dark:border-zinc-700"
+                                >
+                                    <input type="hidden" name="_from" value="Taha Portfolio Contact" />
+                                    <input
+                                        type="text"
+                                        name="name"
+                                        required
+                                        value={formData.name}
+                                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                                        placeholder="Your Name"
+                                        className="px-4 py-2 rounded-md border dark:border-zinc-700 bg-gray-100 dark:bg-zinc-800 text-black dark:text-white shadow"
+                                    />
+                                    <input
+                                        type="email"
+                                        name="email"
+                                        required
+                                        value={formData.email}
+                                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                                        placeholder="Your Email"
+                                        className="px-4 py-2 rounded-md border dark:border-zinc-700 bg-gray-100 dark:bg-zinc-800 text-black dark:text-white shadow"
+                                    />
+                                    <textarea
+                                        name="message"
+                                        required
+                                        rows="5"
+                                        value={formData.message}
+                                        onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                                        placeholder="Your Message"
+                                        className="px-4 py-2 rounded-md border dark:border-zinc-700 bg-gray-100 dark:bg-zinc-800 text-black dark:text-white shadow"
+                                    ></textarea>
+                                    <button
+                                        type="submit"
+                                        className="w-full mt-4 px-4 py-2 bg-blue-600 text-white rounded-full hover:bg-blue-700 shadow flex items-center justify-center gap-2 max-w-xs mx-auto"
+                                      style={{ width: "100px" }}
+
+                                    >
+                                        <Send size={16} />
+                                        Send
+                                    </button>
+
+                                </form>
+                            </div>
+                        </motion.section>
+                    )}
+                </AnimatePresence>
+                <AnimatePresence>
+                    {showConfirmModal && (
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.95 }}
+                            className="fixed inset-0 z-[60] bg-black/50 flex items-center justify-center backdrop-blur-sm px-4"
+                        >
+                            <div className="bg-white dark:bg-zinc-800 text-black dark:text-white rounded-xl p-6 max-w-xs w-full shadow-xl relative">
+                                <h4 className="text-lg font-semibold mb-4 text-center">Send Message?</h4>
+                                <p className="text-sm text-center mb-6">Are you sure you want to send this message?</p>
+                                <div className="flex justify-center gap-4">
+                                    <button
+                                        onClick={() => {
+                                            handleSend(new Event('submit'));
+                                            setShowConfirmModal(false);
+                                        }}
+                                        className="px-4 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 shadow"
+                                    >
+                                        Yes, Send
+                                    </button>
+                                    <button
+                                        onClick={() => setShowConfirmModal(false)}
+                                        className="px-4 py-1 border border-gray-300 dark:border-zinc-600 rounded hover:bg-gray-100 dark:hover:bg-zinc-700 shadow"
+                                    >
+                                        Cancel
+                                    </button>
+                                </div>
+                            </div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
 
                 {/* Footer */}
                 <footer className="text-center py-6 text-sm text-gray-400 dark:text-gray-500">
