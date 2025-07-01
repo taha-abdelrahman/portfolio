@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef } from "react";
-import { Moon, Sun, Download, Mail, Linkedin, Github, Instagram, Phone, Copy, Check, Menu, X, Inbox, Send, ArrowDown, ArrowUp } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Moon, Sun, Download, Mail, Linkedin, Github, Instagram, Phone, Copy, Check, Menu, X, Inbox, Send, ArrowDown, ArrowUp, FileJson, Loader } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Typewriter } from 'react-simple-typewriter';
 
@@ -19,7 +19,6 @@ export default function Home() {
         const onScroll = () => setShowTop(window.scrollY > 300);
         window.addEventListener("scroll", onScroll);
 
-        // ✅ إيقاف السكرول عند فتح الفورم
         if (showContactForm) {
             document.body.style.overflow = 'hidden';
         } else {
@@ -33,9 +32,26 @@ export default function Home() {
     }, [showContactForm]);
 
 
-    const cardStyles = "p-6 rounded-2xl shadow-2xl hover:scale-105 transition-transform duration-300 bg-white dark:bg-zinc-900 text-black dark:text-white animate-fade-in backdrop-blur-md bg-opacity-90";
-    const contactItem = "flex items-center gap-2 text-sm group shadow-md bg-white dark:bg-zinc-800 text-black dark:text-white rounded-md px-4 py-2 transition duration-200";
+    const cardStyles = "p-6 rounded-2xl shadow-2xl hover:scale-105 transition-transform duration-300 animate-fade-in backdrop-blur-md";
+    const contactItem = (darkMode) => `flex items-center gap-2 text-sm group shadow-md  rounded-md px-4 py-2 transition duration-200 ${darkMode ? "bg-zinc-800 text-white" : "bg-white text-black"}`;
     const textWithShadow = "font-bold drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.25)]";
+
+    const skillsWithLinks = [
+        { name: "Node.js", url: "https://nodejs.org/", tooltip: "JavaScript runtime built on Chrome's V8" },
+        { name: "Express.js", url: "https://expressjs.com/", tooltip: "Minimal Node.js web application framework" },
+        { name: "Next.js", url: "https://nextjs.org/", tooltip: "React framework for server-side rendering" },
+        { name: "React.js", url: "https://reactjs.org/", tooltip: "UI library for building interfaces" },
+        { name: "TailwindCSS", url: "https://tailwindcss.com/", tooltip: "Utility-first CSS framework" },
+        { name: "MongoDB", url: "https://www.mongodb.com/", tooltip: "NoSQL document database" },
+        { name: "Firebase", url: "https://firebase.google.com/", tooltip: "Google's app development platform" },
+        { name: "Git", url: "https://git-scm.com/", tooltip: "Version control system" },
+        { name: "Docker", url: "https://www.docker.com/", tooltip: "Container platform for apps" },
+        { name: "REST APIs", url: "https://restfulapi.net/", tooltip: "Design standard for APIs" },
+        { name: "Canva", url: "https://www.canva.com/", tooltip: "Graphic design platform" },
+        { name: "DB Design", url: "https://www.lucidchart.com/pages/er-diagrams", tooltip: "Database structure modeling" },
+    ];
+
+
 
     const copyText = (text) => {
         navigator.clipboard.writeText(text);
@@ -90,7 +106,7 @@ export default function Home() {
             className={
                 darkMode
                     ? "dark min-h-screen text-white bg-gradient-to-br from-black via-zinc-900 to-zinc-800 bg-[url('/noise.svg')] bg-fixed"
-                    : "dark min-h-screen text-white bg-gradient-to-br from-zinc-900 via-zinc-700 to-zinc-800 bg-[url('/noise.svg')] bg-fixed"
+                    : "dark min-h-screen text-white bg-gradient-to-br from-zinc-500 via-zinc-300 to-zinc-400 bg-[url('/noise.svg')] bg-fixed"
             }
         >
             <div className="max-w-4xl mx-auto px-4 py-8 relative">
@@ -98,15 +114,26 @@ export default function Home() {
                     initial={{ opacity: 0, y: -20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.6 }}
-                    className="mb-12 shadow-xl rounded-xl bg-white dark:bg-zinc-900 text-black dark:text-white p-4"
+                    className={`mb-12 shadow-xl rounded-xl p-4 ${darkMode ? "bg-zinc-900 text-white" : "bg-zinc-300 text-black"}`}
                 >
-                    <div className="flex justify-between items-center">
-                        <div className="flex items-center gap-3">
-                            <img src="/avatar.jpg" alt="Taha Abdelrahman" className="w-12 h-12 rounded-full shadow-md" />
-                            <h1 className={`text-3xl ${textWithShadow}`}>Taha Abdelrahman</h1>
+                    <div className="flex flex-wrap justify-between items-center gap-4">
+                        {/* Name & Avatar */}
+                        <div className="flex items-center gap-3 min-w-0 flex-1">
+                            <img
+                                src="/avatar.jpg"
+                                alt="Taha Abdelrahman"
+                                className="w-12 h-12 rounded-full shadow-md shrink-0"
+                            />
+                            <h1 className={`text-xl sm:text-2xl md:text-3xl ${textWithShadow} truncate`}>
+                                Taha Abdelrahman
+                            </h1>
                         </div>
+
+                        {/* Mobile Menu Buttton */}
                         <div className="md:hidden">
-                            <button onClick={() => setMenuOpen(!menuOpen)} className="p-2 rounded-full border shadow-sm bg-white dark:bg-zinc-800 text-black dark:text-white">
+                            <button
+                                onClick={() => setMenuOpen(!menuOpen)}
+                                className={`p-2 rounded-full border shadow-md transition-all duration-200 hover:rotate-180 ${darkMode ? "bg-zinc-800 text-white" : "bg-zinc-200 text-black"}`} >
                                 {menuOpen ? <X size={20} /> : <Menu size={20} />}
                             </button>
                         </div>
@@ -115,13 +142,12 @@ export default function Home() {
                                 <a
                                     key={id}
                                     href={`#${id}`}
-                                    className="text-sm px-3 py-1 border rounded-full hover:bg-gray-600 hover:text-white transition-transform hover:scale-105 shadow-sm text-black dark:text-white"
-                                >
+                                    className={`text-sm px-3 py-1 border rounded-full hover:text-white transition-transform hover:scale-105 shadow-md ${darkMode ? "bg-zinc-900 text-white hover:bg-zinc-800" : "bg-zinc-200 text-black hover:bg-zinc-500"}`} >
                                     {id.charAt(0).toUpperCase() + id.slice(1)}
                                 </a>
                             ))}
                             <button
-                                className="p-2 rounded-full border shadow-md transition-all duration-200 bg-zinc-200 dark:bg-zinc-800 text-black dark:text-white hover:rotate-180"
+                                className={`p-2 rounded-full border shadow-md transition-all duration-200 hover:rotate-180 ${darkMode ? "bg-zinc-800 text-white" : "bg-zinc-200 text-black"}`}
                                 onClick={() => setDarkMode(!darkMode)}
                                 aria-label="Toggle dark mode"
                             >
@@ -146,26 +172,22 @@ export default function Home() {
                                         key={id}
                                         href={`#${id}`}
                                         onClick={(e) => {
-                                            e.preventDefault(); // نوقف التنقل المؤقت
-                                            setMenuOpen(false); // نقفل المينيو
+                                            e.preventDefault();
+                                            setMenuOpen(false);
 
                                             setTimeout(() => {
-                                                // نروح للعنصر
                                                 window.location.hash = id;
-
-                                                // بعد شوية نمسح الـ hash
                                                 setTimeout(() => {
                                                     history.replaceState(null, "", window.location.pathname + window.location.search);
-                                                }, 400); // تأخير بسيط علشان يكون اتحرك بالفعل
-                                            }, 200); // تأخير الأول عشان المينيو يتقفل
+                                                }, 400);
+                                            }, 200);
                                         }}
-                                        className="text-sm px-3 py-2 border rounded-full text-center hover:bg-gray-600 hover:text-white transition"
-                                    >
+                                        className={`text-sm px-3 py-2  border shadow-md rounded-full text-center hover:bg-gray-600 hover:text-white transition ${darkMode ? "bg-zinc-900 text-white" : "bg-zinc-200 text-black"}`}>
                                         {id.charAt(0).toUpperCase() + id.slice(1)}
                                     </a>
                                 ))}
                                 <button
-                                    className="p-2 rounded-full border hover:scale-110 hover:bg-gray-600 transition-transform duration-200 self-center"
+                                    className={`p-2 rounded-full  border shadow-md hover:scale-110 hover:bg-gray-600 transition-transform duration-200 self-center ${darkMode ? "bg-zinc-800 text-white" : "bg-zinc-200 text-black"}`}
                                     onClick={() => setDarkMode(!darkMode)}
                                     aria-label="Toggle dark mode"
                                 >
@@ -196,7 +218,7 @@ export default function Home() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.6 }}
-                    className="mb-16 shadow-xl rounded-xl p-6 bg-white dark:bg-zinc-900 text-black dark:text-white"
+                    className={`mb-16 shadow-xl rounded-xl p-6 ${darkMode ? "bg-zinc-900 text-white" : "bg-zinc-300 text-black"}`}
                 >
                     <h2 className={`text-4xl font-bold mb-4 ${textWithShadow}`}>
                         Hi, I'm Taha <br />
@@ -207,13 +229,14 @@ export default function Home() {
                     <p className={`text-lg mb-2 ${textWithShadow}`}>
                         Back-End Developer & Visual Designer specialized in Node.js, MongoDB, and RESTful APIs.
                     </p>
-                    <div className="flex gap-4 mt-4">
+                    <div className="flex flex-wrap justify-center sm:justify-start gap-4 mt-4">
                         <motion.a
                             whileHover={{ scale: 1.05, y: -2 }}
                             transition={{ type: "spring", stiffness: 300 }}
                             href="#projects"
-                            className="px-6 py-2 bg-blue-600 text-white rounded-full hover:bg-blue-700 shadow-md"
+                            className="flex items-center justify-center gap-2 px-5 py-2 min-w-[150px] text-center border border-zinc-500 bg-blue-600 text-white rounded-full hover:bg-blue-700 shadow-md"
                         >
+                            <FileJson size={16} />
                             View My Work
                         </motion.a>
                         <motion.a
@@ -221,11 +244,12 @@ export default function Home() {
                             transition={{ type: "spring", stiffness: 300 }}
                             href="/Taha_Abdelrahman_CV.pdf"
                             download
-                            className="flex items-center gap-2 px-6 py-2 border border-blue-600 text-blue-600 rounded-full hover:bg-blue-600 hover:text-white shadow-md bg-white dark:bg-zinc-900 text-black dark:text-white"
+                            className={`flex items-center justify-center gap-2 px-5 py-2 min-w-[150px] text-center border border-zinc-600 rounded-full hover:text-white shadow-md ${darkMode ? "text-zinc-300 hover:bg-zinc-800" : "bg-zinc-200 text-black hover:bg-zinc-500"}`}
                         >
                             <Download size={16} /> Download CV
                         </motion.a>
                     </div>
+
                 </motion.section>
 
                 {/* About Section */}
@@ -235,15 +259,37 @@ export default function Home() {
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ duration: 0.6 }}
-                    className="mb-16"
-                >
-                    <div className={cardStyles}>
-                        <h3 className={`text-2xl mb-4 ${textWithShadow}`}>About Me</h3>
-                        <p className="leading-relaxed text-base">
-                            My name is <span className="text-blue-500 font-semibold">Taha Abdelrahman</span>, a dedicated and detail-oriented high school senior specializing in back-end web development. I have hands-on experience designing and implementing RESTful APIs, managing NoSQL databases, and building scalable infrastructure using <strong>Node.js</strong>, <strong>Express.js</strong>, and <strong>MongoDB</strong>. Additionally, I am proficient in tools like <strong>Firebase</strong>, <strong>Docker</strong>, and version control systems like <strong>Git</strong>. My skill set also extends to visual content design using <strong>Canva</strong> for creating promotional materials and UI assets.
-                        </p>
+                    className="mb-16">
+                    <div className={`${cardStyles} ${darkMode ? "bg-zinc-900 text-white" : "bg-zinc-300 text-black"}`} >
+                        <motion.h3
+                            className={`text-2xl mb-6 ${textWithShadow}`}
+                            initial={{ opacity: 0, y: 10 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.5 }} >
+                            About Me
+                        </motion.h3>
+                        <motion.p
+                            initial={{ opacity: 0, y: 10 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 0.5 }}
+                            className={`leading-relaxed text-base ${darkMode ? "text-white" : "text-black"}`} >
+                            My name is{" "}
+                            <span className="text-blue-500 font-semibold">Taha Abdelrahman</span>, a
+                            dedicated and detail-oriented high school senior specializing in back-end
+                            web development. I have hands-on experience designing and implementing
+                            RESTful APIs, managing NoSQL databases, and building scalable
+                            infrastructure using <strong>Node.js</strong>,{" "}
+                            <strong>Express.js</strong>, and <strong>MongoDB</strong>. Additionally, I
+                            am proficient in tools like <strong>Firebase</strong>,{" "}
+                            <strong>Docker</strong>, and version control systems like{" "}
+                            <strong>Git</strong>. My skill set also extends to visual content design
+                            using <strong>Canva</strong> for creating promotional materials and UI
+                            assets.
+                        </motion.p>
                     </div>
                 </motion.section>
+
 
                 {/* Skills Section */}
                 <motion.section
@@ -254,22 +300,34 @@ export default function Home() {
                     transition={{ duration: 0.6 }}
                     className="mb-16"
                 >
-                    <div className={cardStyles}>
+                    <div className={`${cardStyles} ${darkMode ? "bg-zinc-900 text-white" : "bg-zinc-300 text-black"}`}>
                         <h3 className={`text-2xl mb-4 ${textWithShadow}`}>Technical Skills</h3>
                         <p className="mb-4">Here are the main technologies and tools I work with:</p>
                         <div className="flex flex-wrap gap-3">
-                            {["Node.js", "Express.js", "Next.js", "React.js", "TailwindCSS", "MongoDB", "Firebase", "Git", "Docker", "REST APIs", "Canva", "DB Design"].map(skill => (
-                                <motion.span
-                                    key={skill}
-                                    className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-4 py-1 rounded-full text-sm font-medium hover:scale-105 transition-transform duration-200 shadow"
+                            {skillsWithLinks.map(({ name, url, tooltip }, index) => (
+                                <motion.a
+                                    key={name}
+                                    href={url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
                                     whileHover={{ scale: 1.1 }}
+                                    initial={{ opacity: 0, y: 10 }}
+                                    whileInView={{ opacity: 1, y: 0 }}
+                                    transition={{ duration: 0.3, delay: index * 0.05 }}
+                                    className="relative group px-4 py-1 rounded-full text-sm font-medium text-white bg-gradient-to-r from-blue-500 to-indigo-600 shadow cursor-pointer"
                                 >
-                                    {skill}
-                                </motion.span>
+                                    {name}
+                                    {/* Tooltip */}
+                                    <span className="absolute left-1/2 -translate-x-1/2 -top-9 whitespace-nowrap bg-zinc-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition pointer-events-none z-10">
+                                        {tooltip}
+                                    </span>
+                                </motion.a>
                             ))}
                         </div>
+
                     </div>
                 </motion.section>
+
 
                 {/* Projects Section */}
                 <motion.section
@@ -280,12 +338,19 @@ export default function Home() {
                     transition={{ duration: 0.6 }}
                     className="mb-16"
                 >
-                    <div className={cardStyles}>
+                    <div className={`${cardStyles} ${darkMode ? "bg-zinc-900 text-white" : "bg-zinc-300 text-black"}`}>
                         <h3 className={`text-2xl mb-4 ${textWithShadow}`}>Selected Projects</h3>
                         <div className="grid gap-4">
-                            <div className="bg-zinc-100 dark:bg-zinc-800 p-5 rounded-xl shadow hover:scale-[1.02] transition-all duration-300">
+                            <motion.div
+                                initial={{ opacity: 0, y: 20 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ duration: 0.5, delay: 0.1 }}
+                                className={`p-5 rounded-xl shadow transition-all duration-300 hover:scale-[1.02] ${darkMode ? "bg-zinc-800 text-white" : "bg-zinc-100 text-black"
+                                    }`}
+                            >
                                 <h4 className="text-xl font-semibold mb-1">🎟 Ticket Booking Platform</h4>
-                                <p className="text-sm mb-2 text-gray-500 dark:text-gray-400">
+                                <p className={`text-sm mb-2 ${darkMode ? "text-gray-400" : "text-gray-600"}`}>
                                     A web-based ticket booking platform developed using <strong>Next.js</strong>, <strong>MongoDB</strong>, and <strong>TailwindCSS</strong>. The system supports user authentication, dynamic event listings, and secure API architecture.
                                 </p>
                                 <div className="flex items-center gap-4">
@@ -297,27 +362,34 @@ export default function Home() {
                                     >
                                         🔗 Live Preview
                                     </a>
-                                    {/* <a
-                    href="https://github.com/taha-abdelrahman"
-                    className="text-gray-400 hover:text-blue-400 text-sm"
-                    target="_blank"
-                  >
-                    View Code →
-                  </a> */}
                                 </div>
-                            </div>
-                            {/* Additional projects can be listed here */}
-                            <div className="bg-zinc-100 dark:bg-zinc-800 p-5 rounded-xl shadow hover:scale-[1.02] transition-all duration-300 opacity-60 pointer-events-none">
-                                <h4 className="text-xl font-semibold mb-1">🛠 Orken Team Platform (In Progress)</h4>
-                                <p className="text-sm mb-2 text-gray-500 dark:text-gray-400">
-                                    A collaborative workspace management system currently under active development. The platform will allow teams to manage projects, roles, and workflows seamlessly using modern technologies including <strong>Next.js</strong>, <strong>TailwindCSS</strong>, and <strong>MongoDB</strong>.
-                                </p>
-                                <p className="text-xs italic text-gray-400 dark:text-gray-500">Status: In Development — Not yet deployed</p>
-                            </div>
+                            </motion.div>
+                            <motion.div
+                                initial={{ opacity: 0, y: 20 }}
+                                whileInView={{ opacity: 0.5, y: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ duration: 0.5, delay: 0.2 }}
+                                className={`p-5 rounded-xl shadow transition-all duration-300 pointer-events-none ${darkMode ? "bg-zinc-800 text-white" : "bg-zinc-100 text-black"}`}
+                            >
+                                <h4 className="text-xl font-semibold mb-1 flex items-center gap-2">
+                                    🛠 Orken Team Platform
+                                    <span
+                                        className={`flex items-center gap-1 text-xs px-2 py-0.5 rounded-full font-medium bg-yellow-500/20 ${darkMode ? "text-gray-400" : "text-gray-600"}`} >
+                                        <Loader size={14} /> In Progress
+                                    </span>
 
+                                </h4>
+                                <p className={`text-sm mb-2 ${darkMode ? "text-gray-400" : "text-gray-600"}`}>
+                                    A collaborative workspace management system currently under active development. The platform will allow teams to manage projects, roles, and workflows seamlessly using modern technologies including <strong>Next.js</strong>, <strong>TypeScript</strong>, <strong>TailwindCSS</strong>, and <strong>MongoDB</strong>.
+                                </p>
+                                <p className="text-xs italic text-gray-400 dark:text-gray-500">
+                                    Status: In Development — Not yet deployed
+                                </p>
+                            </motion.div>
                         </div>
                     </div>
                 </motion.section>
+
 
                 {/* Contact Section */}
                 <motion.section
@@ -328,43 +400,101 @@ export default function Home() {
                     transition={{ duration: 0.6 }}
                     className="mb-16"
                 >
-                    <div className={cardStyles}>
-                        <h3 className={`text-2xl mb-4 ${textWithShadow}`}>Contact Information</h3>
-                        <p className="mb-4">Feel free to reach out for project opportunities, freelance inquiries, or networking:</p>
+                    <div className={`${cardStyles} ${darkMode ? "bg-zinc-900 text-white" : "bg-zinc-300 text-black"}`}>
+                        <motion.h3
+                            className={`text-2xl mb-4 ${textWithShadow}`}
+                            initial={{ opacity: 0, y: 10 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.5 }}
+                        >
+                            Contact Information
+                        </motion.h3>
+                        <motion.p
+                            className="mb-4"
+                            initial={{ opacity: 0, y: 10 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.5, delay: 0.1 }}
+                        >
+                            Feel free to reach out for project opportunities, freelance inquiries, or networking:
+                        </motion.p>
                         <ul className="mt-4 space-y-3">
-                            <li className={contactItem}>
-                                <Mail size={16} /> taha.abdelra7man@gmail.com
-                                <button onClick={() => copyText("taha.abdelra7man@gmail.com")} className="ml-auto opacity-60 group-hover:opacity-100">
-                                    {getCopyIcon("taha.abdelra7man@gmail.com")}
-                                </button>
-                            </li>
-                            <li className={contactItem}>
-                                <Phone size={16} /> +20 101 000 4881
-                                <button onClick={() => copyText("+20 101 000 4881")} className="ml-auto opacity-60 group-hover:opacity-100">
-                                    {getCopyIcon("+20 101 000 4881")}
-                                </button>
-                            </li>
-                            <li className={contactItem}>
-                                <Linkedin size={16} /><a href="https://www.linkedin.com/in/taha-abdelra7man/" target="_blank" className="text-blue-500 hover:underline">LinkedIn</a>
-                            </li>
-                            <li className={contactItem}>
-                                <Github size={16} /><a href="https://github.com/taha-abdelrahman" target="_blank" className="text-blue-500 hover:underline">GitHub</a>
-                            </li>
-                            <li className={contactItem}>
-                                <Instagram size={16} /><a href="https://www.instagram.com/x.tvhv/" target="_blank" className="text-blue-500 hover:underline">@x.tvhv</a>
-                            </li>
+                            {[
+                                {
+                                    icon: <Mail size={16} />,
+                                    content: "taha.abdelra7man@gmail.com",
+                                    copy: true,
+                                },
+                                {
+                                    icon: <Phone size={16} />,
+                                    content: "+20 101 000 4881",
+                                    copy: true,
+                                },
+                                {
+                                    icon: <Linkedin size={16} />,
+                                    content: "LinkedIn",
+                                    link: "https://www.linkedin.com/in/taha-abdelra7man/",
+                                },
+                                {
+                                    icon: <Github size={16} />,
+                                    content: "GitHub",
+                                    link: "https://github.com/taha-abdelrahman",
+                                },
+                                {
+                                    icon: <Instagram size={16} />,
+                                    content: "@x.tvhv",
+                                    link: "https://www.instagram.com/x.tvhv/",
+                                },
+                            ].map((item, index) => (
+                                <motion.li
+                                    key={index}
+                                    className={contactItem(darkMode)}
+                                    initial={{ opacity: 0, y: 10 }}
+                                    whileInView={{ opacity: 1, y: 0 }}
+                                    viewport={{ once: true }}
+                                    transition={{ duration: 0.4, delay: 0.2 + index * 0.15 }}
+                                >
+                                    {item.icon}{" "}
+                                    {item.link ? (
+                                        <a
+                                            href={item.link}
+                                            target="_blank"
+                                            className="text-blue-500 hover:underline"
+                                        >
+                                            {item.content}
+                                        </a>
+                                    ) : (
+                                        <>
+                                            {item.content}
+                                            {item.copy && (
+                                                <button
+                                                    onClick={() => copyText(item.content)}
+                                                    className="ml-auto opacity-60 group-hover:opacity-100"
+                                                >
+                                                    {getCopyIcon(item.content)}
+                                                </button>
+                                            )}
+                                        </>
+                                    )}
+                                </motion.li>
+                            ))}
                         </ul>
-                        <div className="text-center mt-10">
+                        <motion.div
+                            className="text-center mt-10"
+                            initial={{ opacity: 0, y: 10 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.5, delay: 0.5 }} >
                             <button
                                 onClick={() => setShowContactForm(!showContactForm)}
                                 className="mt-6 px-6 py-2 bg-blue-600 text-white rounded-full hover:bg-blue-700 shadow-md flex items-center justify-center gap-2 mx-auto"
                             >
-                                {showContactForm ? <Inbox size={16} /> : <Inbox size={16} />}
-                                {showContactForm ? 'Send Message ( Opened )' : 'Send Message'}
+                                <Inbox size={16} />
+                                {showContactForm ? "Send Message ( Opened )" : "Send Message"}
                             </button>
-                        </div>
+                        </motion.div>
                     </div>
                 </motion.section>
+
+
 
                 {/* Toast Message */}
                 {toastMessage && (
@@ -384,8 +514,7 @@ export default function Home() {
                             transition={{ duration: 0.3 }}
                             className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center overflow-y-auto p-4"
                         >
-                            <div className="relative bg-white dark:bg-zinc-900 text-black dark:text-white rounded-2xl shadow-2xl max-w-xl w-full p-6">
-                                {/* زر X */}
+                            <div className={`relative rounded-2xl shadow-2xl max-w-xl w-full p-6 ${darkMode ? "bg-zinc-900 text-white" : "bg-white text-black"}`}>
                                 <button
                                     onClick={() => setShowContactForm(false)}
                                     className="absolute top-4 right-4 text-zinc-500 hover:text-red-500"
@@ -402,7 +531,7 @@ export default function Home() {
                                         e.preventDefault();
                                         setShowConfirmModal(true);
                                     }}
-                                    className="flex flex-col gap-4 bg-opacity-80 backdrop-blur-lg p-6 rounded-xl shadow-2xl border border-gray-200 dark:border-zinc-700"
+                                    className={`flex flex-col gap-4 bg-opacity-80 backdrop-blur-lg p-6 rounded-xl shadow-2xl border ${darkMode ? "border-zinc-700" : "border-gray-200"}`}
                                 >
                                     <input type="hidden" name="_from" value="Taha Portfolio Contact" />
                                     <input
@@ -412,7 +541,7 @@ export default function Home() {
                                         value={formData.name}
                                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                                         placeholder="Your Name"
-                                        className="px-4 py-2 rounded-md border dark:border-zinc-700 bg-gray-100 dark:bg-zinc-800 text-black dark:text-white shadow"
+                                        className={`px-4 py-2 rounded-md border dark:border-zinc-700 shadow ${darkMode ? "bg-zinc-800 text-white" : "bg-gray-100 text-black"}`}
                                     />
                                     <input
                                         type="email"
@@ -421,7 +550,7 @@ export default function Home() {
                                         value={formData.email}
                                         onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                                         placeholder="Your Email"
-                                        className="px-4 py-2 rounded-md border dark:border-zinc-700 bg-gray-100 dark:bg-zinc-800 text-black dark:text-white shadow"
+                                        className={`px-4 py-2 rounded-md border dark:border-zinc-700 shadow ${darkMode ? "bg-zinc-800 text-white" : "bg-gray-100 text-black"}`}
                                     />
                                     <textarea
                                         name="message"
@@ -430,7 +559,7 @@ export default function Home() {
                                         value={formData.message}
                                         onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                                         placeholder="Your Message"
-                                        className="px-4 py-2 rounded-md border dark:border-zinc-700 bg-gray-100 dark:bg-zinc-800 text-black dark:text-white shadow"
+                                        className={`px-4 py-2 rounded-md border dark:border-zinc-700 shadow ${darkMode ? "bg-zinc-800 text-white" : "bg-gray-100 text-black"}`}
                                     ></textarea>
                                     <button
                                         type="submit"
@@ -481,7 +610,7 @@ export default function Home() {
                 </AnimatePresence>
 
                 {/* Footer */}
-                <footer className="text-center py-6 text-sm text-gray-400 dark:text-gray-500">
+                <footer className={`text-center py-6 text-sm ${darkMode ? "text-gray-500" : "text-gray-600"}`}>
                     © {new Date().getFullYear()} Taha Abdelrahman — Back-End Developer & Designer
                 </footer>
 
